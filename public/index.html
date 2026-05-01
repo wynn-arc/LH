@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Merch POS" />
+<meta name="theme-color" content="#1D9E75" />
+<title>Merch Vision POS</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeede9;
+    --text: #1a1a1a; --text2: #666660; --text3: #999994;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --green: #1D9E75; --green-bg: #E1F5EE; --green-text: #085041;
+    --red-bg: #FCEBEB; --red-text: #791F1F;
+    --amber: #E07B00; --amber-bg: #FAEEDA; --amber-text: #633806;
+    --info-bg: #E6F1FB; --info-text: #0C447C;
+    --radius: 10px; --radius-sm: 7px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1c; --bg2: #262626; --bg3: #2f2f2f;
+      --text: #f0f0ee; --text2: #aaaaaa; --text3: #666666;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --green-bg: #04342C; --green-text: #9FE1CB;
+      --red-bg: #501313; --red-text: #F7C1C1;
+      --amber-bg: #412402; --amber-text: #FAC775;
+      --info-bg: #042C53; --info-text: #B5D4F4;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; font-size: 15px; }
+  .topbar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .app-title { font-size: 17px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); display: inline-block; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: var(--bg2); color: var(--text2); border: 0.5px solid var(--border); }
+  .pill.ok { background: var(--green-bg); color: var(--green-text); border-color: transparent; }
+  .stock-bell { background: none; border: none; font-size: 20px; cursor: pointer; padding: 2px 4px; position: relative; }
+  .stock-bell .badge { position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%; background: #E53E3E; color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; display: none; }
+  .main { max-width: 980px; margin: 0 auto; padding: 20px 16px; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; }
+  .card-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); margin-bottom: 12px; }
+  .token-row { display: flex; gap: 8px; }
+  .token-row input { flex: 1; }
+  input[type=text], input[type=password] { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 14px; color: var(--text); outline: none; width: 100%; }
+  input:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(29,158,117,0.15); }
+  button { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 9px 18px; font-size: 14px; color: var(--text); cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+  button:hover { background: var(--bg3); }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.4; cursor: default; transform: none; }
+  .btn-green { background: var(--green); color: #fff; border-color: transparent; font-weight: 500; }
+  .btn-green:hover { background: #178a65; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* Camera */
+  #vid-wrap { position: relative; width: 100%; aspect-ratio: 4/3; background: #111; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 12px; }
+  #camvid { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #snap-canvas { display: none; }
+  .scan-frame { position: absolute; inset: 10%; border: 2px solid rgba(29,158,117,0.65); border-radius: 10px; pointer-events: none; }
+  .pulse-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(29,158,117,0.6); animation: pulse 2s ease-in-out infinite; display: none; pointer-events: none; }
+  @keyframes pulse { 0%,100%{opacity:.2;transform:translate(-50%,-50%) scale(.8);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2);} }
+  .multi-badge { position: absolute; top: 10px; right: 10px; background: rgba(29,158,117,.88); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; pointer-events: none; display: none; }
+  .cam-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+  .cam-btns button { flex: 1; }
+  .interval-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+  .interval-row input[type=range] { flex: 1; accent-color: var(--green); }
+  .interval-val { font-size: 13px; font-weight: 600; min-width: 26px; color: var(--text); }
+  .countdown-track { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
+  .countdown-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.1s linear; }
+  .scan-count { font-size: 11px; color: var(--text3); text-align: right; margin-bottom: 6px; display: none; }
+  .detections { display: flex; flex-direction: column; gap: 8px; min-height: 52px; }
+  .det-card { display: flex; align-items: center; gap: 10px; background: var(--bg2); border-radius: var(--radius-sm); padding: 9px 12px; border: 0.5px solid var(--border); animation: slideIn 0.2s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);} }
+  .det-num { width: 28px; height: 28px; border-radius: 50%; background: var(--green-bg); color: var(--green-text); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .det-body { flex: 1; min-width: 0; }
+  .det-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .det-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .det-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .add-btn { font-size: 12px; padding: 5px 12px; background: var(--green); color: #fff; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; }
+  .add-btn:hover { background: #178a65; }
+  .dismiss-btn { font-size: 12px; padding: 5px 10px; background: var(--red-bg); color: var(--red-text); border: none; border-radius: var(--radius-sm); cursor: pointer; }
+  .add-all-row { display: flex; justify-content: flex-end; }
+  .add-all-btn { font-size: 12px; padding: 5px 14px; background: var(--info-bg); color: var(--info-text); border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; }
+  .status-text { font-size: 13px; color: var(--text2); padding: 6px 0; }
+
+  /* Low stock tag */
+  .stock-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--amber-bg); color: var(--amber-text); margin-left: 4px; vertical-align: middle; }
+  .stock-tag.out { background: var(--red-bg); color: var(--red-text); }
+
+  /* Cart */
+  .cart-list { max-height: 240px; overflow-y: auto; }
+  .cart-empty { text-align: center; padding: 24px 0; font-size: 14px; color: var(--text3); }
+  .cart-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+  .cart-item:last-child { border-bottom: none; }
+  .ci-name { flex: 1; font-size: 14px; }
+  .qty-ctrl { display: flex; align-items: center; gap: 5px; }
+  .qbtn { width: 24px; height: 24px; border-radius: 50%; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .qnum { font-size: 13px; min-width: 20px; text-align: center; }
+  .ci-price { font-size: 14px; font-weight: 500; min-width: 72px; text-align: right; }
+  .totals { border-top: 0.5px solid var(--border); margin-top: 10px; padding-top: 10px; }
+  .trow { display: flex; justify-content: space-between; font-size: 14px; color: var(--text2); margin-bottom: 4px; }
+  .trow.grand { font-size: 17px; font-weight: 600; color: var(--text); margin-top: 8px; }
+  .checkout-btn { width: 100%; margin-top: 12px; padding: 12px; font-size: 15px; }
+  .clear-link { display: block; text-align: center; margin-top: 8px; font-size: 13px; color: var(--text3); cursor: pointer; text-decoration: underline; }
+
+  /* Modals */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--bg); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 360px; border: 0.5px solid var(--border); max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+  .modal-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 14px; }
+  .r-item { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+  .r-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 600; border-top: 0.5px solid var(--border); margin-top: 10px; padding-top: 10px; }
+  .modal-btns { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .modal-btns button { flex: 1; min-width: 100px; }
+
+  /* Receipt modal extras */
+  .receipt-store { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+  .receipt-num { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
+  .receipt-divider { border: none; border-top: 0.5px dashed var(--border2); margin: 12px 0; }
+  .share-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .share-btn { flex: 1; min-width: 90px; font-size: 13px; padding: 8px 10px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-sm); cursor: pointer; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); }
+  .share-btn.whatsapp { background: #25D366; color: #fff; border-color: transparent; }
+  .share-btn.copy { background: var(--info-bg); color: var(--info-text); border-color: transparent; }
+  .share-btn.print { background: var(--bg2); }
+
+  /* Stock alert modal */
+  .stock-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 14px; }
+  .stock-item:last-child { border-bottom: none; }
+  .stock-qty { font-weight: 600; }
+  .stock-qty.low { color: var(--amber); }
+  .stock-qty.out { color: var(--red-text); }
+
+  /* Misc */
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--green); border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .conf-high{color:var(--green);} .conf-medium{color:var(--amber-text);} .conf-low{color:var(--text2);}
+  .msg { font-size: 13px; color: var(--text2); margin-top: 6px; }
+  .save-hint { font-size: 12px; color: var(--text3); margin-top: 5px; }
+
+  @media print {
+    body > *:not(#print-receipt) { display: none !important; }
+    #print-receipt { display: block !important; font-family: monospace; font-size: 13px; max-width: 300px; margin: 0 auto; padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="app-title"><span class="dot"></span> Merch Vision POS</div>
+  <div class="topbar-right">
+    <button class="stock-bell" id="stock-bell" onclick="openStockModal()" title="Stock alerts" style="display:none">
+      🔔<span class="badge" id="stock-badge"></span>
+    </button>
+    <span class="pill" id="conn-pill">Not connected</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="card">
+    <div class="card-title">Loyverse connection</div>
+    <div class="token-row">
+      <input type="password" id="api-token" placeholder="Paste API token from Back Office → Integrations → API" />
+      <button onclick="connectLoyverse()">Connect</button>
+    </div>
+    <div class="msg" id="conn-msg"></div>
+    <div class="save-hint" id="save-hint"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">Camera — scans up to 3 items at once</div>
+      <div id="vid-wrap">
+        <video id="camvid" autoplay playsinline muted></video>
+        <canvas id="snap-canvas"></canvas>
+        <div class="scan-frame"></div>
+        <div class="pulse-ring" id="pulse-ring"></div>
+        <div class="multi-badge" id="multi-badge">Multi-scan ON</div>
+      </div>
+      <div class="cam-btns">
+        <button class="btn-green" id="start-btn" onclick="startCamera()">Start camera</button>
+        <button id="stop-btn" onclick="stopCamera()" style="display:none">Stop</button>
+      </div>
+      <div class="interval-row">
+        <span>Scan every</span>
+        <input type="range" min="2" max="10" step="1" value="5" id="interval-slider" oninput="updateInterval(this.value)" />
+        <span class="interval-val" id="interval-val">5s</span>
+      </div>
+      <div class="countdown-track"><div class="countdown-fill" id="countdown-bar" style="width:100%"></div></div>
+      <div class="scan-count" id="scan-count"></div>
+      <div class="detections" id="detections"><div class="status-text">Start camera to begin scanning</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">Current sale</div>
+      <div class="cart-list" id="cart-list"><div class="cart-empty">No items added yet</div></div>
+      <div class="totals" id="totals" style="display:none">
+        <div class="trow"><span>Subtotal</span><span id="subtotal">₱0.00</span></div>
+        <div class="trow grand"><span>Total</span><span id="total-amt">₱0.00</span></div>
+      </div>
+      <button class="checkout-btn btn-green" id="checkout-btn" disabled onclick="openSaleModal()">Complete sale</button>
+      <span class="clear-link" onclick="clearCart()">Clear cart</span>
+    </div>
+  </div>
+</div>
+
+<!-- Sale confirm modal -->
+<div class="overlay" id="sale-modal">
+  <div class="modal">
+    <div class="modal-title">Sale summary</div>
+    <div id="sale-items"></div>
+    <div class="r-total"><span>Total</span><span id="sale-total"></span></div>
+    <div class="modal-btns">
+      <button onclick="closeSaleModal()">Cancel</button>
+      <button class="btn-green" onclick="submitSale()">Confirm sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt modal -->
+<div class="overlay" id="receipt-modal">
+  <div class="modal">
+    <div class="modal-title">Receipt</div>
+    <div class="receipt-store" id="receipt-store"></div>
+    <div class="receipt-num" id="receipt-num"></div>
+    <hr class="receipt-divider" />
+    <div id="receipt-items"></div>
+    <hr class="receipt-divider" />
+    <div class="r-total"><span>Total</span><span id="receipt-total"></span></div>
+    <div class="share-btns">
+      <button class="share-btn whatsapp" onclick="shareWhatsApp()">📱 WhatsApp</button>
+      <button class="share-btn copy" onclick="copyReceipt()">📋 Copy</button>
+      <button class="share-btn print" onclick="printReceipt()">🖨️ Print</button>
+    </div>
+    <div class="modal-btns" style="margin-top:10px">
+      <button class="btn-green" onclick="closeReceiptModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stock alert modal -->
+<div class="overlay" id="stock-modal">
+  <div class="modal">
+    <div class="modal-title">🔔 Stock Alerts</div>
+    <div class="modal-subtitle" id="stock-modal-sub"></div>
+    <div id="stock-modal-list"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-green" onclick="closeStockModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden print area -->
+<div id="print-receipt" style="display:none"></div>
+
+<script>
+const API_BASE = '/api/loyverse';
+const LOW_STOCK_THRESHOLD = 5;
+
+let apiToken='', storeId='', storeName='', loyItems=[], cart=[];
+let cameraOn=false, scanInterval=5;
+let scanTimer=null, countdownTimer=null, countdownVal=0;
+let scanning=false, pendingDetections=[];
+let inventoryMap={}, lowStockItems=[];
+let lastReceiptData=null;
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('loyverse_token');
+  if (saved) {
+    document.getElementById('api-token').value = saved;
+    document.getElementById('save-hint').textContent = 'Token loaded from saved data.';
+  }
+});
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+function setConnPill(t,type){const p=document.getElementById('conn-pill');p.textContent=t;p.className='pill'+(type?' '+type:'');}
+function setConnMsg(t){document.getElementById('conn-msg').textContent=t;}
+
+async function loyFetch(path, options={}, params={}) {
+  const url = new URL(API_BASE, window.location.origin);
+  url.searchParams.set('path', path);
+  for (const [k,v] of Object.entries(params)) url.searchParams.set(k, v);
+  return fetch(url.toString(), {
+    ...options,
+    headers: { 'Authorization': 'Bearer ' + apiToken, 'Content-Type': 'application/json', ...(options.headers||{}) }
+  });
+}
+
+async function connectLoyverse() {
+  apiToken = document.getElementById('api-token').value.trim();
+  if (!apiToken) return setConnMsg('Please enter your API token.');
+  setConnMsg('Connecting...');
+  try {
+    const r = await loyFetch('stores');
+    if (!r.ok) throw new Error('Invalid token (status ' + r.status + ')');
+    const d = await r.json();
+    if (d.stores && d.stores.length) {
+      storeId = d.stores[0].id;
+      storeName = d.stores[0].name;
+      setConnPill(storeName, 'ok');
+      localStorage.setItem('loyverse_token', apiToken);
+      document.getElementById('save-hint').textContent = 'Token saved for next visit.';
+      await loadItems();
+      await loadInventory();
+    }
+  } catch(e) { setConnMsg('Error: ' + e.message); }
+}
+
+async function loadItems() {
+  setConnMsg('Loading products...');
+  try {
+    let all=[], cursor='';
+    do {
+      const params={limit:250}; if(cursor) params.cursor=cursor;
+      const r = await loyFetch('items',{},params);
+      const d = await r.json();
+      all=all.concat(d.items||[]); cursor=d.cursor||'';
+    } while(cursor);
+    loyItems=all;
+    setConnMsg(loyItems.length+' products loaded. Start camera to begin.');
+  } catch(e) { setConnMsg('Could not load products: '+e.message); }
+}
+
+// ── Inventory / Low stock ─────────────────────────────────────────────────────
+async function loadInventory() {
+  if (!storeId) return;
+  try {
+    let all=[], cursor='';
+    do {
+      const params={store_id:storeId,limit:250}; if(cursor) params.cursor=cursor;
+      const r = await loyFetch('inventory',{},params);
+      const d = await r.json();
+      all=all.concat(d.inventory_levels||[]); cursor=d.cursor||'';
+    } while(cursor);
+
+    inventoryMap={};
+    for (const inv of all) inventoryMap[inv.variant_id] = inv.in_stock;
+
+    // Find low stock items
+    lowStockItems=[];
+    for (const item of loyItems) {
+      for (const variant of (item.variants||[])) {
+        const qty = inventoryMap[variant.id];
+        if (qty !== undefined && qty !== null) {
+          if (qty <= 0) lowStockItems.push({name: item.item_name, variant: variant.variant_name, qty, status:'out'});
+          else if (qty <= LOW_STOCK_THRESHOLD) lowStockItems.push({name: item.item_name, variant: variant.variant_name, qty, status:'low'});
+        }
+      }
+    }
+
+    updateStockBell();
+  } catch(e) { console.log('Inventory load failed:', e.message); }
+}
+
+function updateStockBell() {
+  const bell = document.getElementById('stock-bell');
+  const badge = document.getElementById('stock-badge');
+  if (lowStockItems.length > 0) {
+    bell.style.display = '';
+    badge.style.display = 'flex';
+    badge.textContent = lowStockItems.length > 9 ? '9+' : lowStockItems.length;
+  } else {
+    bell.style.display = 'none';
+  }
+}
+
+function getStockTag(variantId) {
+  const qty = inventoryMap[variantId];
+  if (qty === undefined || qty === null) return '';
+  if (qty <= 0) return '<span class="stock-tag out">Out of stock</span>';
+  if (qty <= LOW_STOCK_THRESHOLD) return `<span class="stock-tag">Only ${qty} left</span>`;
+  return '';
+}
+
+function openStockModal() {
+  const list = document.getElementById('stock-modal-list');
+  const sub = document.getElementById('stock-modal-sub');
+  if (!lowStockItems.length) { sub.textContent='All products are well-stocked.'; list.innerHTML=''; }
+  else {
+    sub.textContent = lowStockItems.length+' item'+(lowStockItems.length>1?'s':'')+' need attention:';
+    list.innerHTML = lowStockItems.map(i=>`
+      <div class="stock-item">
+        <span>${esc(i.name)}${i.variant&&i.variant!=='Regular'?' – '+esc(i.variant):''}</span>
+        <span class="stock-qty ${i.status}">${i.status==='out'?'Out of stock':i.qty+' left'}</span>
+      </div>`).join('');
+  }
+  document.getElementById('stock-modal').classList.add('show');
+}
+function closeStockModal() { document.getElementById('stock-modal').classList.remove('show'); }
+
+// ── Camera ────────────────────────────────────────────────────────────────────
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    document.getElementById('camvid').srcObject=stream; cameraOn=true;
+    document.getElementById('start-btn').style.display='none';
+    document.getElementById('stop-btn').style.display='';
+    document.getElementById('pulse-ring').style.display='';
+    document.getElementById('multi-badge').style.display='';
+    startScanLoop();
+  } catch(e) { showStatus('Camera error: '+e.message); }
+}
+
+function stopCamera() {
+  const vid=document.getElementById('camvid');
+  if(vid.srcObject) vid.srcObject.getTracks().forEach(t=>t.stop());
+  vid.srcObject=null; cameraOn=false;
+  clearInterval(scanTimer); clearInterval(countdownTimer);
+  document.getElementById('start-btn').style.display='';
+  document.getElementById('stop-btn').style.display='none';
+  document.getElementById('pulse-ring').style.display='none';
+  document.getElementById('multi-badge').style.display='none';
+  document.getElementById('countdown-bar').style.width='100%';
+  document.getElementById('scan-count').style.display='none';
+}
+
+function updateInterval(v) {
+  scanInterval=parseInt(v); document.getElementById('interval-val').textContent=v+'s';
+  if(cameraOn){clearInterval(scanTimer);clearInterval(countdownTimer);startScanLoop();}
+}
+
+function startScanLoop() {
+  countdownVal=scanInterval;
+  countdownTimer=setInterval(()=>{
+    countdownVal-=0.1; if(countdownVal<0) countdownVal=scanInterval;
+    document.getElementById('countdown-bar').style.width=Math.max(0,(countdownVal/scanInterval)*100)+'%';
+  },100);
+  scanTimer=setInterval(runScan,scanInterval*1000);
+  runScan();
+}
+
+// ── AI Scan ───────────────────────────────────────────────────────────────────
+async function runScan() {
+  if(scanning||!cameraOn||!apiToken||loyItems.length===0) return;
+  scanning=true;
+  showStatus('<span class="spinner"></span>Scanning frame for products...');
+  try {
+    const b64=captureFrame(); if(!b64){scanning=false;return;}
+    const productList=loyItems.slice(0,120).map(i=>i.item_name).join(', ');
+    const prompt=`You are a product recognition AI for a merch store POS. The store sells: ${productList}.\n\nLook at this image. Identify UP TO 3 distinct products visible that match the catalog.\n\nRespond ONLY with this exact JSON:\n{"detections":[{"product_name":"<exact name>","confidence":"high|medium|low"}]}\n\nRules: only clearly visible items, no duplicates, max 3. If nothing matches: {"detections":[]}\nNo extra text or markdown.`;
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
+        {type:'text',text:prompt}
+      ]}]})
+    });
+    const data=await resp.json();
+    const txt=(data.content&&data.content[0]&&data.content[0].text)||'';
+    let result; try{result=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch{result={detections:[]};}
+    const detections=(result.detections||[]).slice(0,3);
+    const matched=detections.map(d=>{const f=findItem(d.product_name);return f?{item:f.item,variant:f.variant,confidence:d.confidence}:null;}).filter(Boolean);
+    if(matched.length>0){
+      pendingDetections=matched; renderDetections(matched);
+      const sc=document.getElementById('scan-count'); sc.style.display='';
+      sc.textContent=matched.length+' product'+(matched.length>1?'s':'')+' detected';
+    } else {
+      pendingDetections=[]; showStatus('No products detected — lay items flat in frame');
+      document.getElementById('scan-count').style.display='none';
+    }
+  } catch(e){showStatus('Error: '+e.message);}
+  scanning=false;
+}
+
+function captureFrame(){
+  const vid=document.getElementById('camvid'),canvas=document.getElementById('snap-canvas');
+  if(!vid.videoWidth)return null;
+  canvas.width=vid.videoWidth; canvas.height=vid.videoHeight;
+  canvas.getContext('2d').drawImage(vid,0,0);
+  return canvas.toDataURL('image/jpeg',0.8).split(',')[1];
+}
+
+function findItem(name){
+  const n=name.toLowerCase();
+  const item=loyItems.find(i=>i.item_name.toLowerCase()===n||i.item_name.toLowerCase().includes(n)||n.includes(i.item_name.toLowerCase()));
+  if(!item)return null;
+  return{item,variant:(item.variants&&item.variants[0])||{}};
+}
+
+// ── Detection cards ───────────────────────────────────────────────────────────
+function renderDetections(matched){
+  let html='';
+  matched.forEach((m,i)=>{
+    const price=m.variant.default_price||0;
+    const cc=m.confidence==='high'?'conf-high':m.confidence==='medium'?'conf-medium':'conf-low';
+    const stockTag=getStockTag(m.variant.id);
+    html+=`<div class="det-card" id="det-${i}">
+      <div class="det-num">${i+1}</div>
+      <div class="det-body">
+        <div class="det-name">${esc(m.item.item_name)}${stockTag}</div>
+        <div class="det-sub">₱${price.toFixed(2)} · <span class="${cc}">${m.confidence} confidence</span></div>
+      </div>
+      <div class="det-actions">
+        <button class="add-btn" onclick="addDetection(${i})">+ Add</button>
+        <button class="dismiss-btn" onclick="dismissDetection(${i})">✕</button>
+      </div>
+    </div>`;
+  });
+  if(matched.length>1) html+=`<div class="add-all-row"><button class="add-all-btn" onclick="addAllDetections()">+ Add all ${matched.length} items</button></div>`;
+  document.getElementById('detections').innerHTML=html;
+}
+
+function addDetection(i){if(!pendingDetections[i])return;addToCart(pendingDetections[i].item,pendingDetections[i].variant);dismissDetection(i);}
+function dismissDetection(i){
+  pendingDetections[i]=null;
+  const el=document.getElementById('det-'+i); if(el)el.remove();
+  const rem=pendingDetections.filter(Boolean).length;
+  const addAll=document.querySelector('.add-all-row'); if(addAll&&rem<2)addAll.remove();
+  if(rem===0)document.getElementById('scan-count').style.display='none';
+}
+function addAllDetections(){
+  pendingDetections.forEach(m=>{if(m)addToCart(m.item,m.variant);});
+  pendingDetections=[];
+  document.getElementById('detections').innerHTML='<div class="status-text">All items added to cart ✓</div>';
+  document.getElementById('scan-count').style.display='none';
+}
+function showStatus(msg){document.getElementById('detections').innerHTML=`<div class="status-text">${msg}</div>`;}
+
+// ── Cart ──────────────────────────────────────────────────────────────────────
+function addToCart(item,variant){
+  const key=variant.id||item.id, ex=cart.find(c=>c.vid===key);
+  if(ex){ex.qty++;}else{
+    const vn=variant.variant_name&&variant.variant_name!=='Regular'?' – '+variant.variant_name:'';
+    cart.push({vid:key,iid:item.id,name:item.item_name+vn,price:variant.default_price||0,qty:1});
+  }
+  renderCart();
+}
+function changeQty(vid,d){
+  const i=cart.findIndex(c=>c.vid===vid); if(i<0)return;
+  cart[i].qty+=d; if(cart[i].qty<=0)cart.splice(i,1); renderCart();
+}
+function renderCart(){
+  const list=document.getElementById('cart-list'),tot=document.getElementById('totals'),btn=document.getElementById('checkout-btn');
+  if(!cart.length){list.innerHTML='<div class="cart-empty">No items added yet</div>';tot.style.display='none';btn.disabled=true;return;}
+  let html='',sub=0;
+  for(const c of cart){
+    const line=c.price*c.qty; sub+=line;
+    html+=`<div class="cart-item"><div class="ci-name">${esc(c.name)}</div><div class="qty-ctrl"><button class="qbtn" onclick="changeQty('${escA(c.vid)}',-1)">−</button><span class="qnum">${c.qty}</span><button class="qbtn" onclick="changeQty('${escA(c.vid)}',1)">+</button></div><div class="ci-price">₱${line.toFixed(2)}</div></div>`;
+  }
+  list.innerHTML=html;
+  document.getElementById('subtotal').textContent='₱'+sub.toFixed(2);
+  document.getElementById('total-amt').textContent='₱'+sub.toFixed(2);
+  tot.style.display=''; btn.disabled=!apiToken;
+}
+function clearCart(){cart=[];renderCart();}
+
+// ── Sale modal ────────────────────────────────────────────────────────────────
+function openSaleModal(){
+  let html='',total=0;
+  for(const c of cart){const l=c.price*c.qty;total+=l;html+=`<div class="r-item"><span>${c.qty}x ${esc(c.name)}</span><span>₱${l.toFixed(2)}</span></div>`;}
+  document.getElementById('sale-items').innerHTML=html;
+  document.getElementById('sale-total').textContent='₱'+total.toFixed(2);
+  document.getElementById('sale-modal').classList.add('show');
+}
+function closeSaleModal(){document.getElementById('sale-modal').classList.remove('show');}
+
+// ── Submit sale ───────────────────────────────────────────────────────────────
+async function submitSale(){
+  if(!apiToken||!storeId)return;
+  closeSaleModal(); showStatus('<span class="spinner"></span>Submitting to Loyverse...');
+  const lineItems=cart.map(c=>({item_id:c.iid,variant_id:c.vid,quantity:c.qty,price:c.price,total_money:parseFloat((c.price*c.qty).toFixed(2)),gross_total_money:parseFloat((c.price*c.qty).toFixed(2))}));
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  try{
+    const r=await loyFetch('receipts',{method:'POST',body:JSON.stringify({store_id:storeId,receipt_type:'SALE',line_items:lineItems,payments:[{payment_type_id:null,money_amount:parseFloat(total.toFixed(2))}],total_money:parseFloat(total.toFixed(2)),total_tax:0,points_earned:0,points_balance:0,points_deducted:0,note:''})});
+    const d=await r.json();
+    if(r.ok&&d.receipt_number){
+      // Save receipt data then show receipt modal
+      lastReceiptData={receiptNumber:d.receipt_number,items:[...cart],total,storeName,date:new Date()};
+      showStatus('Sale recorded! Receipt #'+d.receipt_number);
+      clearCart();
+      await loadInventory(); // refresh stock after sale
+      openReceiptModal(lastReceiptData);
+    } else {
+      const msg=d.errors?d.errors.map(e=>e.details||e.code).join(', '):JSON.stringify(d);
+      showStatus('Loyverse error: '+msg);
+    }
+  }catch(e){showStatus('Network error: '+e.message);}
+}
+
+// ── Receipt modal ─────────────────────────────────────────────────────────────
+function openReceiptModal(data){
+  const dateStr=data.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('receipt-store').textContent=data.storeName;
+  document.getElementById('receipt-num').textContent='Receipt #'+data.receiptNumber+' · '+dateStr;
+  let html='';
+  for(const c of data.items){const l=c.price*c.qty;html+=`<div class="r-item"><span>${c.qty}x ${esc(c.name)}</span><span>₱${l.toFixed(2)}</span></div>`;}
+  document.getElementById('receipt-items').innerHTML=html;
+  document.getElementById('receipt-total').textContent='₱'+data.total.toFixed(2);
+  document.getElementById('receipt-modal').classList.add('show');
+}
+function closeReceiptModal(){document.getElementById('receipt-modal').classList.remove('show');}
+
+function buildReceiptText(data){
+  const dateStr=data.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  let txt=`${data.storeName}\nReceipt #${data.receiptNumber}\n${dateStr}\n`;
+  txt+='─'.repeat(28)+'\n';
+  for(const c of data.items) txt+=`${c.qty}x ${c.name}\n    ₱${(c.price*c.qty).toFixed(2)}\n`;
+  txt+='─'.repeat(28)+'\n';
+  txt+=`TOTAL: ₱${data.total.toFixed(2)}\n`;
+  txt+='Thank you for your purchase!';
+  return txt;
+}
+
+function shareWhatsApp(){
+  if(!lastReceiptData)return;
+  const text=encodeURIComponent(buildReceiptText(lastReceiptData));
+  window.open('https://wa.me/?text='+text,'_blank');
+}
+
+function copyReceipt(){
+  if(!lastReceiptData)return;
+  navigator.clipboard.writeText(buildReceiptText(lastReceiptData)).then(()=>{
+    const btn=document.querySelector('.share-btn.copy');
+    const orig=btn.innerHTML; btn.innerHTML='✅ Copied!';
+    setTimeout(()=>btn.innerHTML=orig,2000);
+  });
+}
+
+function printReceipt(){
+  if(!lastReceiptData)return;
+  const data=lastReceiptData;
+  const dateStr=data.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  let html=`<div style="text-align:center;margin-bottom:12px"><strong>${esc(data.storeName)}</strong><br/>Receipt #${data.receiptNumber}<br/>${dateStr}</div>`;
+  html+='<hr/>';
+  for(const c of data.items) html+=`<div style="display:flex;justify-content:space-between"><span>${c.qty}x ${esc(c.name)}</span><span>₱${(c.price*c.qty).toFixed(2)}</span></div>`;
+  html+='<hr/>';
+  html+=`<div style="display:flex;justify-content:space-between;font-weight:bold"><span>TOTAL</span><span>₱${data.total.toFixed(2)}</span></div>`;
+  html+='<p style="text-align:center;margin-top:12px">Thank you for your purchase!</p>';
+  document.getElementById('print-receipt').innerHTML=html;
+  window.print();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escA(s){return String(s).replace(/'/g,'&#39;');}
+</script>
+</body>
+</html>
