@@ -484,7 +484,7 @@ Respond ONLY with JSON:
 
 No extra text. Max ${MAX_VISUAL_CANDIDATES} candidates.`;
 
-    const step1Resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const step1Resp=await fetch('/api/claude',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
@@ -535,7 +535,7 @@ No extra text. Max ${MAX_VISUAL_CANDIDATES} candidates.`;
     const step2Prompt=`\nBased on the camera image and the product reference images above, which products from the catalog are visible in the camera image?\n\nRespond ONLY with JSON:\n{"detections":[{"product_name":"<exact name>","confidence":"high|medium|low"}]}\n\nRules:\n- Only include products you can clearly see in the camera image\n- Match visually — color, design, style must align\n- Max 3 detections, no duplicates\n- If nothing matches well: {"detections":[]}\nNo extra text.`;
     contentBlocks.push({type:'text',text:step2Prompt});
 
-    const step2Resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const step2Resp=await fetch('/api/claude',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:contentBlocks}]})
     });
