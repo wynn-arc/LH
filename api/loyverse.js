@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   const path = req.query.path;
   if (!path) return res.status(400).json({ error: 'Missing path parameter' });
 
-  // Special route: proxy an image URL to avoid CORS
+  // Image proxy to avoid CORS on product images
   if (path === '__image_proxy') {
     const imageUrl = req.query.url;
     if (!imageUrl) return res.status(400).json({ error: 'Missing url' });
@@ -27,7 +27,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // Build query string (exclude 'path')
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(req.query)) {
     if (key !== 'path') params.append(key, value);
