@@ -59,7 +59,7 @@
   #vid-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#111;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px}
   #camvid{width:100%;height:100%;object-fit:cover;display:block}
   #snap-canvas{display:none}
-  .scan-frame{position:absolute;inset:10%;border:2px solid rgba(29,158,117,.65);border-radius:10px;pointer-events:none}
+  .scan-frame{position:absolute;inset:4%;border:2px solid rgba(29,158,117,.65);border-radius:10px;pointer-events:none}
   .pulse-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;border:2px solid rgba(29,158,117,.6);animation:pulse 2s ease-in-out infinite;display:none;pointer-events:none}
   @keyframes pulse{0%,100%{opacity:.2;transform:translate(-50%,-50%) scale(.8)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}}
   .multi-badge{position:absolute;top:10px;right:10px;background:rgba(29,158,117,.88);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;pointer-events:none;display:none}
@@ -188,8 +188,8 @@
       </div>
       <div class="interval-row">
         <span>Scan every</span>
-        <input type="range" min="4" max="15" step="1" value="7" id="interval-slider" oninput="updateInterval(this.value)" />
-        <span class="interval-val" id="interval-val">7s</span>
+        <input type="range" min="8" max="20" step="1" value="10" id="interval-slider" oninput="updateInterval(this.value)" />
+        <span class="interval-val" id="interval-val">10s</span>
       </div>
       <div class="countdown-track"><div class="countdown-fill" id="countdown-bar" style="width:100%"></div></div>
       <div class="scan-count" id="scan-count"></div>
@@ -265,7 +265,7 @@ const MAX_VISUAL_CANDIDATES = 12; // max product images sent to Claude per scan
 let apiToken='', storeId='', storeName='';
 let loyItems=[], itemImageCache={};  // variantId -> base64 image
 let cart=[], inventoryMap={}, lowStockItems=[];
-let cameraOn=false, scanInterval=7;
+let cameraOn=false, scanInterval=10;
 let scanTimer=null, countdownTimer=null, countdownVal=0;
 let scanning=false, pendingDetections=[];
 let lastReceiptData=null;
@@ -349,19 +349,30 @@ async function loadItems(){
   }catch(e){setConnMsg('Could not load products: '+e.message);}
 }
 
-// Prefetch up to 60 images in background (most recently updated items first)
+// Prefetch ALL product images in batches — scanning can start immediately
+let imagesCached=0, imagesToCache=0, imageCachingDone=false;
 async function prefetchImages(){
-  const itemsWithImages=loyItems.filter(i=>i.image_url).slice(0,60);
-  let done=0;
-  for(const item of itemsWithImages){
-    const b64=await fetchImageAsBase64(item.image_url);
-    if(b64) itemImageCache[item.id]=b64;
-    done++;
-    if(done===itemsWithImages.length){
-      setConnMsg(loyItems.length+' products loaded · '+Object.keys(itemImageCache).length+' images cached. Start camera to begin.');
-    }
+  const itemsWithImages=loyItems.filter(i=>i.image_url);
+  imagesToCache=itemsWithImages.length;
+  if(!imagesToCache){imageCachingDone=true;setConnMsg(loyItems.length+' products loaded. Start camera to begin.');return;}
+  setConnMsg(loyItems.length+' products loaded · Caching images 0/'+imagesToCache+' (you can start scanning now)');
+  // Process in batches of 5 concurrently
+  const BATCH=5;
+  for(let i=0;i<itemsWithImages.length;i+=BATCH){
+    const batch=itemsWithImages.slice(i,i+BATCH);
+    await Promise.all(batch.map(async item=>{
+      const b64=await fetchImageAsBase64(item.image_url);
+      if(b64) itemImageCache[item.id]=b64;
+      imagesCached++;
+      const pct=Math.round((imagesCached/imagesToCache)*100);
+      if(imagesCached<imagesToCache){
+        setConnMsg(loyItems.length+' products · Caching images '+imagesCached+'/'+imagesToCache+' ('+pct+'%) — scanning active');
+      } else {
+        imageCachingDone=true;
+        setConnMsg(loyItems.length+' products · '+Object.keys(itemImageCache).length+' images cached ✓ Ready!');
+      }
+    }));
   }
-  if(!itemsWithImages.length) setConnMsg(loyItems.length+' products loaded. Start camera to begin.');
 }
 
 // ── Inventory ─────────────────────────────────────────────────────────────────
@@ -422,15 +433,27 @@ function closeStockModal(){document.getElementById('stock-modal').classList.remo
 
 // ── Camera ────────────────────────────────────────────────────────────────────
 async function startCamera(){
+  if(!apiToken){showStatus('Connect to Loyverse first.');return;}
   try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
     document.getElementById('camvid').srcObject=stream;cameraOn=true;
     document.getElementById('start-btn').style.display='none';
     document.getElementById('stop-btn').style.display='';
     document.getElementById('pulse-ring').style.display='';
     document.getElementById('multi-badge').style.display='';
+    if(!imageCachingDone){
+      showStatus('⏳ Images still caching — scanning will start automatically when ready enough ('+imagesCached+'/'+imagesToCache+')');
+      // Wait until at least 20 images cached before first scan
+      await waitForMinImages(20);
+    }
     startScanLoop();
   }catch(e){showStatus('Camera error: '+e.message);}
+}
+
+async function waitForMinImages(min){
+  while(imagesCached<min&&!imageCachingDone){
+    await new Promise(r=>setTimeout(r,500));
+  }
 }
 
 function stopCamera(){
@@ -467,6 +490,13 @@ async function runScan(){
   if(scanning||!cameraOn||!apiToken||loyItems.length===0)return;
   scanning=true;
 
+  // Warn but still scan if images still loading
+  if(!imageCachingDone){
+    const pct=imagesToCache>0?Math.round((imagesCached/imagesToCache)*100):0;
+    showStatus('<span class="spinner"></span>Images still loading ('+pct+'%) — scan may be less accurate...');
+    await new Promise(r=>setTimeout(r,800));
+  }
+
   try{
     const b64=captureFrame();if(!b64){scanning=false;return;}
 
@@ -498,7 +528,7 @@ No extra text. Max ${MAX_VISUAL_CANDIDATES} candidates.`;
 
     const candidates=(step1Result.candidates||[]).slice(0,MAX_VISUAL_CANDIDATES);
     if(!candidates.length){
-      showStatus('No products detected — make sure items are clearly visible in frame');
+      showStatus('Could not identify item. Tips: ① Ensure good lighting ② Center item in frame ③ Avoid shadows or glare ④ Hold camera steady');
       setStepIndicator(null);scanning=false;return;
     }
 
@@ -560,7 +590,7 @@ No extra text. Max ${MAX_VISUAL_CANDIDATES} candidates.`;
       sc.textContent=matched.length+' product'+(matched.length>1?'s':'')+' matched';
     }else{
       pendingDetections=[];
-      showStatus('No confident match — try better lighting or a clearer angle');
+      showStatus('No match found. Tips: ① Better lighting ② Hold item steady ③ Make sure product has a photo in Loyverse ④ Try a different angle');
       document.getElementById('scan-count').style.display='none';
     }
   }catch(e){setStepIndicator(null);showStatus('Error: '+e.message);}
