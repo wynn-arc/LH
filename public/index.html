@@ -38,8 +38,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stock-bell{background:none;border:none;font-size:20px;cursor:pointer;padding:2px 4px;position:relative;display:none}
 .bell-badge{position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#E53E3E;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center}
 .main{max-width:980px;margin:0 auto;padding:16px}
-
-/* Cards */
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:14px}
 .card-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:12px}
 .token-row{display:flex;gap:8px}
@@ -52,16 +50,26 @@ button:active{transform:scale(.98)}
 button:disabled{opacity:.4;cursor:default;transform:none}
 .btn-green{background:var(--green);color:#fff;border-color:transparent;font-weight:500}
 .btn-green:hover{background:#178a65}
+.btn-amber{background:var(--amber);color:#fff;border-color:transparent;font-weight:500;width:100%;font-size:15px;padding:12px;margin-top:10px}
+.btn-amber:hover{background:#c96d00}
 .msg{font-size:13px;color:var(--text2);margin-top:6px}
 .save-hint{font-size:12px;color:var(--text3);margin-top:4px}
 
-/* Index progress */
-.index-bar-wrap{margin-top:10px;display:none}
-.index-bar-label{font-size:12px;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
-.index-bar-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+/* Index card */
+.index-card{background:var(--green-bg);border:0.5px solid rgba(29,158,117,.3);border-radius:var(--radius);padding:16px 20px;margin-bottom:14px;display:none}
+.index-card.warn{background:var(--amber-bg);border-color:rgba(224,123,0,.3)}
+.index-card-title{font-size:14px;font-weight:600;color:var(--green-text);margin-bottom:4px}
+.index-card.warn .index-card-title{color:var(--amber-text)}
+.index-card-sub{font-size:13px;color:var(--green-text);margin-bottom:12px;opacity:.85}
+.index-card.warn .index-card-sub{color:var(--amber-text)}
+.index-bar-track{height:6px;background:rgba(29,158,117,.2);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.index-card.warn .index-bar-track{background:rgba(224,123,0,.2)}
 .index-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
-.index-actions{display:flex;gap:8px;margin-top:8px}
-.index-actions button{font-size:13px;flex:1}
+.index-card.warn .index-bar-fill{background:var(--amber)}
+.index-bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--green-text);margin-bottom:10px;opacity:.8}
+.index-card.warn .index-bar-label{color:var(--amber-text)}
+.index-btns{display:flex;gap:8px}
+.index-btns button{flex:1;font-size:13px}
 
 /* Grid */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -98,7 +106,6 @@ button:disabled{opacity:.4;cursor:default;transform:none}
 .add-all-row{display:flex;justify-content:flex-end}
 .add-all-btn{font-size:12px;padding:5px 14px;background:var(--info-bg);color:var(--info-text);border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:500}
 .status-text{font-size:13px;color:var(--text2);padding:6px 0}
-.status-text.tip{font-size:12px;color:var(--text3);line-height:1.5}
 .conf-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
 .conf-high{background:var(--green-bg);color:var(--green-text)}
 .conf-medium{background:var(--amber-bg);color:var(--amber-text)}
@@ -106,20 +113,19 @@ button:disabled{opacity:.4;cursor:default;transform:none}
 .stock-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--amber-bg);color:var(--amber-text);margin-left:4px;vertical-align:middle}
 .stock-tag.out{background:var(--red-bg);color:var(--red-text)}
 
-/* Manual search */
+/* Search */
 .search-wrap{position:relative;margin-bottom:10px}
 .search-wrap input{padding-left:36px}
 .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;opacity:.5}
-.search-results{max-height:260px;overflow-y:auto}
+.search-results{max-height:280px;overflow-y:auto}
 .search-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
 .search-item:last-child{border-bottom:none}
-.search-item:hover .si-name{color:var(--green)}
 .si-thumb{width:38px;height:38px;border-radius:6px;object-fit:cover;background:var(--bg3);flex-shrink:0}
 .si-thumb-ph{width:38px;height:38px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .si-body{flex:1;min-width:0}
 .si-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .si-price{font-size:12px;color:var(--text2);margin-top:1px}
-.si-add{font-size:11px;padding:4px 10px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0}
+.si-add{font-size:11px;padding:5px 12px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0;font-weight:500}
 .search-empty{font-size:13px;color:var(--text3);padding:16px 0;text-align:center}
 
 /* Cart */
@@ -160,7 +166,6 @@ button:disabled{opacity:.4;cursor:default;transform:none}
 .stock-qty{font-weight:600}
 .stock-qty.low{color:var(--amber)}
 .stock-qty.out{color:var(--red-text)}
-
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--green);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media print{body>*:not(#print-receipt){display:none!important}#print-receipt{display:block!important;font-family:monospace;font-size:13px;max-width:300px;margin:0 auto;padding:20px}}
@@ -187,18 +192,17 @@ button:disabled{opacity:.4;cursor:default;transform:none}
     </div>
     <div class="msg" id="conn-msg"></div>
     <div class="save-hint" id="save-hint"></div>
+  </div>
 
-    <!-- Visual index progress -->
-    <div class="index-bar-wrap" id="index-bar-wrap">
-      <div class="index-bar-label">
-        <span id="index-label">Building visual index…</span>
-        <span id="index-pct">0%</span>
-      </div>
-      <div class="index-bar-track"><div class="index-bar-fill" id="index-bar" style="width:0%"></div></div>
-      <div class="index-actions">
-        <button id="index-btn" onclick="startIndexing()" style="display:none">🔍 Build visual index</button>
-        <button id="reindex-btn" onclick="reindex()" style="display:none">↺ Re-index</button>
-      </div>
+  <!-- Visual Index Card — shown prominently after connect -->
+  <div class="index-card warn" id="index-card">
+    <div class="index-card-title" id="index-card-title">🔍 Visual Index Required</div>
+    <div class="index-card-sub" id="index-card-sub">Build the visual index once so the camera can recognize your products. Takes ~3 min for 160 items.</div>
+    <div class="index-bar-track"><div class="index-bar-fill" id="index-bar" style="width:0%"></div></div>
+    <div class="index-bar-label"><span id="index-label">Not started</span><span id="index-pct"></span></div>
+    <div class="index-btns">
+      <button class="btn-green" id="index-start-btn" onclick="startIndexing()" style="font-size:15px;padding:11px">🔍 Build visual index now</button>
+      <button id="index-reindex-btn" onclick="reindex()" style="display:none;font-size:13px">↺ Re-index</button>
     </div>
   </div>
 
@@ -206,7 +210,7 @@ button:disabled{opacity:.4;cursor:default;transform:none}
 
     <div style="display:flex;flex-direction:column;gap:14px">
 
-      <!-- Camera card -->
+      <!-- Camera -->
       <div class="card" style="margin-bottom:0">
         <div class="card-title">Camera scan</div>
         <div id="vid-wrap">
@@ -227,24 +231,24 @@ button:disabled{opacity:.4;cursor:default;transform:none}
         </div>
         <div class="countdown-track"><div class="countdown-fill" id="countdown-bar" style="width:100%"></div></div>
         <div class="scan-count" id="scan-count"></div>
-        <div class="detections" id="detections"><div class="status-text">Start camera or search below</div></div>
+        <div class="detections" id="detections"><div class="status-text">Build visual index above, then start camera</div></div>
       </div>
 
-      <!-- Manual search card -->
+      <!-- Manual search -->
       <div class="card" style="margin-bottom:0">
-        <div class="card-title">Manual search</div>
+        <div class="card-title">Manual search — use this now while index builds</div>
         <div class="search-wrap">
           <span class="search-icon">🔎</span>
           <input type="text" id="search-input" placeholder="Type product name…" oninput="onSearch(this.value)" autocomplete="off"/>
         </div>
         <div class="search-results" id="search-results">
-          <div class="search-empty">Connect to Loyverse to search products</div>
+          <div class="search-empty">Connect to Loyverse to search</div>
         </div>
       </div>
 
     </div>
 
-    <!-- Right: Cart -->
+    <!-- Cart -->
     <div class="card" style="margin-bottom:0;align-self:start">
       <div class="card-title">Current sale</div>
       <div class="cart-list" id="cart-list"><div class="cart-empty">No items added yet</div></div>
@@ -259,7 +263,7 @@ button:disabled{opacity:.4;cursor:default;transform:none}
   </div>
 </div>
 
-<!-- Sale confirm -->
+<!-- Modals -->
 <div class="overlay" id="sale-modal">
   <div class="modal">
     <div class="modal-title">Sale summary</div>
@@ -272,7 +276,6 @@ button:disabled{opacity:.4;cursor:default;transform:none}
   </div>
 </div>
 
-<!-- Receipt -->
 <div class="overlay" id="receipt-modal">
   <div class="modal">
     <div class="modal-title">Receipt</div>
@@ -293,7 +296,6 @@ button:disabled{opacity:.4;cursor:default;transform:none}
   </div>
 </div>
 
-<!-- Stock alerts -->
 <div class="overlay" id="stock-modal">
   <div class="modal">
     <div class="modal-title">🔔 Stock Alerts</div>
@@ -310,30 +312,41 @@ button:disabled{opacity:.4;cursor:default;transform:none}
 <script>
 const API_BASE='/api/loyverse';
 const LOW_STOCK_THRESHOLD=5;
-const INDEX_STORAGE_KEY='merch_visual_index_v2';
-const BATCH_SIZE=5; // concurrent image description requests
+const INDEX_KEY='merch_vis_idx_v3';
+const BATCH=5;
 
 let apiToken='',storeId='',storeName='';
-let loyItems=[],itemImageCache={},visualIndex={}; // itemId -> {description, name, price, variantId}
+let loyItems=[],imgCache={},visualIndex={};
 let cart=[],inventoryMap={},lowStockItems=[];
 let cameraOn=false,scanInterval=10;
 let scanTimer=null,countdownTimer=null,countdownVal=0;
-let scanning=false,pendingDetections=[];
-let lastReceiptData=null;
+let scanning=false,pendingDetections=[],lastReceiptData=null;
 let indexingActive=false;
 
-// ─── Init ──────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded',()=>{
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',async()=>{
+  try{const s=localStorage.getItem(INDEX_KEY);if(s)visualIndex=JSON.parse(s);}catch(e){}
   const saved=localStorage.getItem('loyverse_token');
-  if(saved){document.getElementById('api-token').value=saved;document.getElementById('save-hint').textContent='Token loaded from saved data.';}
-  // Load cached visual index
+  if(!saved)return;
+  document.getElementById('api-token').value=saved;
+  apiToken=saved;
+  document.getElementById('save-hint').textContent='Reconnecting…';
   try{
-    const stored=localStorage.getItem(INDEX_STORAGE_KEY);
-    if(stored)visualIndex=JSON.parse(stored);
-  }catch(e){}
+    const r=await loyFetch('stores');
+    if(!r.ok)throw new Error('auth');
+    const d=await r.json();
+    if(d.stores&&d.stores.length){
+      storeId=d.stores[0].id;storeName=d.stores[0].name;
+      setConnPill(storeName,'ok');
+      document.getElementById('save-hint').textContent='Token saved for next visit.';
+      await loadItems();
+      await loadInventory();
+      showIndexCard();
+    }
+  }catch(e){document.getElementById('save-hint').textContent='Token saved — tap Connect to reconnect.';}
 });
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escA(s){return String(s).replace(/'/g,'&#39;');}
 function setConnPill(t,type){const p=document.getElementById('conn-pill');p.textContent=t;p.className='pill'+(type?' '+type:'');}
@@ -348,7 +361,7 @@ async function loyFetch(path,options={},params={}){
   return fetch(url.toString(),{...options,headers:{'Authorization':'Bearer '+apiToken,'Content-Type':'application/json',...(options.headers||{})}});
 }
 
-async function claudeFetch(messages,maxTokens=600){
+async function claudeFetch(messages,maxTokens=300){
   const r=await fetch('/api/claude',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,messages})
@@ -357,7 +370,7 @@ async function claudeFetch(messages,maxTokens=600){
   return(d.content&&d.content[0]&&d.content[0].text)||'';
 }
 
-async function fetchImageAsBase64(imageUrl){
+async function fetchImg(imageUrl){
   if(!imageUrl)return null;
   try{
     const url=new URL(API_BASE,window.location.origin);
@@ -366,16 +379,11 @@ async function fetchImageAsBase64(imageUrl){
     const r=await fetch(url.toString(),{headers:{'Authorization':'Bearer '+apiToken}});
     if(!r.ok)return null;
     const blob=await r.blob();
-    return new Promise(resolve=>{
-      const reader=new FileReader();
-      reader.onload=()=>resolve(reader.result.split(',')[1]);
-      reader.onerror=()=>resolve(null);
-      reader.readAsDataURL(blob);
-    });
+    return new Promise(res=>{const rd=new FileReader();rd.onload=()=>res(rd.result.split(',')[1]);rd.onerror=()=>res(null);rd.readAsDataURL(blob);});
   }catch{return null;}
 }
 
-// ─── Connect ───────────────────────────────────────────────────────────────
+// ── Connect ───────────────────────────────────────────────────────────────────
 async function connectLoyverse(){
   apiToken=document.getElementById('api-token').value.trim();
   if(!apiToken)return setConnMsg('Please enter your API token.');
@@ -391,7 +399,7 @@ async function connectLoyverse(){
       document.getElementById('save-hint').textContent='Token saved for next visit.';
       await loadItems();
       await loadInventory();
-      checkIndexStatus();
+      showIndexCard();
     }
   }catch(e){setConnMsg('Error: '+e.message);}
 }
@@ -408,196 +416,166 @@ async function loadItems(){
     }while(cursor);
     loyItems=all;
     setConnMsg(loyItems.length+' products loaded.');
-    renderSearch(''); // populate search with all items
+    renderSearch('');
+    // Fetch thumbnails for search in background
+    loyItems.filter(i=>i.image_url).slice(0,40).forEach(async item=>{
+      if(!imgCache[item.id]){const b=await fetchImg(item.image_url);if(b)imgCache[item.id]=b;}
+    });
   }catch(e){setConnMsg('Could not load products: '+e.message);}
 }
 
-// ─── Visual Index ──────────────────────────────────────────────────────────
-function checkIndexStatus(){
-  const wrap=document.getElementById('index-bar-wrap');
-  const btn=document.getElementById('index-btn');
-  const reindexBtn=document.getElementById('reindex-btn');
-  wrap.style.display='';
-  const indexedCount=Object.keys(visualIndex).length;
-  if(indexedCount===0){
-    document.getElementById('index-label').textContent='No visual index yet — build one for accurate camera scanning';
-    document.getElementById('index-pct').textContent='';
+// ── Index Card ────────────────────────────────────────────────────────────────
+function showIndexCard(){
+  const card=document.getElementById('index-card');
+  const indexed=Object.keys(visualIndex).length;
+  const total=loyItems.filter(i=>i.image_url).length;
+  card.style.display='';
+
+  if(indexed===0){
+    card.className='index-card warn';
+    document.getElementById('index-card-title').textContent='🔍 Visual Index Required';
+    document.getElementById('index-card-sub').textContent='Build the visual index once so the camera can recognize your products. Takes ~3–5 min for '+total+' items. You can use manual search while it runs.';
     document.getElementById('index-bar').style.width='0%';
-    btn.style.display='';
-    reindexBtn.style.display='none';
-  }else{
-    const total=loyItems.filter(i=>i.image_url).length;
-    const pct=Math.round((indexedCount/total)*100);
-    document.getElementById('index-label').textContent='Visual index: '+indexedCount+'/'+total+' products indexed';
-    document.getElementById('index-pct').textContent=pct+'%';
+    document.getElementById('index-label').textContent='Not started';
+    document.getElementById('index-pct').textContent='';
+    document.getElementById('index-start-btn').style.display='';
+    document.getElementById('index-reindex-btn').style.display='none';
+    showStatus('Build the visual index above to enable camera scanning. Use manual search below in the meantime.');
+  }else if(indexed<total){
+    card.className='index-card warn';
+    const pct=Math.round((indexed/total)*100);
+    document.getElementById('index-card-title').textContent='⚠️ Index Incomplete';
+    document.getElementById('index-card-sub').textContent=indexed+' of '+total+' products indexed. Some items may not be recognized.';
     document.getElementById('index-bar').style.width=pct+'%';
-    btn.style.display='none';
-    reindexBtn.style.display='';
+    document.getElementById('index-label').textContent=indexed+'/'+total+' products';
+    document.getElementById('index-pct').textContent=pct+'%';
+    document.getElementById('index-start-btn').textContent='Continue indexing';
+    document.getElementById('index-start-btn').style.display='';
+    document.getElementById('index-reindex-btn').style.display='';
+  }else{
+    card.className='index-card';
+    document.getElementById('index-card-title').textContent='✓ Visual Index Ready';
+    document.getElementById('index-card-sub').textContent=indexed+' products indexed — camera scanning is ready.';
+    document.getElementById('index-bar').style.width='100%';
+    document.getElementById('index-label').textContent=indexed+' products indexed';
+    document.getElementById('index-pct').textContent='100%';
+    document.getElementById('index-start-btn').style.display='none';
+    document.getElementById('index-reindex-btn').style.display='';
+    showStatus('Visual index ready ✓ Start the camera to begin scanning.');
   }
 }
 
-function reindex(){
-  visualIndex={};
-  localStorage.removeItem(INDEX_STORAGE_KEY);
-  startIndexing();
-}
+function reindex(){if(confirm('Re-index all products? This will take a few minutes.')){visualIndex={};localStorage.removeItem(INDEX_KEY);startIndexing();}}
 
 async function startIndexing(){
   if(indexingActive)return;
   indexingActive=true;
-  document.getElementById('index-btn').style.display='none';
-  document.getElementById('reindex-btn').style.display='none';
-  const wrap=document.getElementById('index-bar-wrap');
-  wrap.style.display='';
+  const card=document.getElementById('index-card');
+  card.style.display='';
+  card.className='index-card';
+  document.getElementById('index-start-btn').style.display='none';
+  document.getElementById('index-reindex-btn').style.display='none';
 
   const itemsToIndex=loyItems.filter(i=>i.image_url&&!visualIndex[i.id]);
   const total=itemsToIndex.length;
+  const alreadyDone=Object.keys(visualIndex).length;
+  const grandTotal=loyItems.filter(i=>i.image_url).length;
   let done=0;
 
-  document.getElementById('index-label').textContent='Indexing… (this runs once, keep screen on)';
+  document.getElementById('index-card-title').textContent='⏳ Building visual index…';
+  document.getElementById('index-card-sub').textContent='Keep this screen open. You can use manual search while this runs.';
 
-  // Process in parallel batches
-  for(let i=0;i<itemsToIndex.length;i+=BATCH_SIZE){
-    const batch=itemsToIndex.slice(i,i+BATCH_SIZE);
+  for(let i=0;i<itemsToIndex.length;i+=BATCH){
+    const batch=itemsToIndex.slice(i,i+BATCH);
     await Promise.all(batch.map(async item=>{
       try{
-        const b64=await fetchImageAsBase64(item.image_url);
+        const b64=await fetchImg(item.image_url);
         if(!b64){done++;return;}
-        itemImageCache[item.id]=b64;
-
-        // Ask Claude to describe the product image visually
-        const prompt=`Describe this merch product image in detail for visual search purposes. Focus on: character/subject (if any), colors, design style, item type (sticker/pin/shirt/etc), notable visual features. Be specific and concise. Max 60 words.`;
-        const description=await claudeFetch([{role:'user',content:[
+        imgCache[item.id]=b64;
+        const desc=await claudeFetch([{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
-          {type:'text',text:prompt}
-        ]}],150);
-
+          {type:'text',text:'Describe this merch product image for visual search. Include: item type (sticker/pin/shirt/keychain/etc), colors, any character or subject, design style, notable details. Max 50 words.'}
+        ]}],120);
         const variant=(item.variants&&item.variants[0])||{};
-        visualIndex[item.id]={
-          name:item.item_name,
-          description:description.trim(),
-          price:variant.default_price||0,
-          variantId:variant.id||item.id,
-          itemId:item.id
-        };
-      }catch(e){console.log('Index error for',item.item_name,e.message);}
+        visualIndex[item.id]={name:item.item_name,description:desc.trim(),price:variant.default_price||0,variantId:variant.id||item.id,itemId:item.id};
+      }catch(e){console.log('Index err:',item.item_name,e.message);}
       done++;
-      const pct=Math.round((done/total)*100);
-      document.getElementById('index-label').textContent='Indexing '+done+'/'+total+' products…';
-      document.getElementById('index-pct').textContent=pct+'%';
+      const total2=alreadyDone+done;
+      const pct=Math.round((total2/grandTotal)*100);
       document.getElementById('index-bar').style.width=pct+'%';
+      document.getElementById('index-label').textContent='Indexed '+total2+'/'+grandTotal+'…';
+      document.getElementById('index-pct').textContent=pct+'%';
     }));
-    // Save progress after each batch
-    localStorage.setItem(INDEX_STORAGE_KEY,JSON.stringify(visualIndex));
+    localStorage.setItem(INDEX_KEY,JSON.stringify(visualIndex));
   }
 
   indexingActive=false;
-  const indexed=Object.keys(visualIndex).length;
-  document.getElementById('index-label').textContent='✓ Visual index complete — '+indexed+' products indexed';
-  document.getElementById('index-pct').textContent='100%';
-  document.getElementById('index-bar').style.width='100%';
-  document.getElementById('reindex-btn').style.display='';
-  setConnMsg(loyItems.length+' products loaded · Visual index ready ✓');
+  showIndexCard();
 }
 
-// ─── Inventory ─────────────────────────────────────────────────────────────
+// ── Inventory ─────────────────────────────────────────────────────────────────
 async function loadInventory(){
   try{
     let all=[],cursor='';
-    do{
-      const params={store_id:storeId,limit:250};if(cursor)params.cursor=cursor;
-      const r=await loyFetch('inventory',{},params);
-      const d=await r.json();
+    do{const params={store_id:storeId,limit:250};if(cursor)params.cursor=cursor;
+      const r=await loyFetch('inventory',{},params);const d=await r.json();
       all=all.concat(d.inventory_levels||[]);cursor=d.cursor||'';
     }while(cursor);
-    inventoryMap={};
-    for(const inv of all)inventoryMap[inv.variant_id]=inv.in_stock;
+    inventoryMap={};for(const inv of all)inventoryMap[inv.variant_id]=inv.in_stock;
     lowStockItems=[];
-    for(const item of loyItems){
-      for(const v of(item.variants||[])){
-        const qty=inventoryMap[v.id];
-        if(qty!==undefined&&qty!==null){
-          if(qty<=0)lowStockItems.push({name:item.item_name,variant:v.variant_name,qty,status:'out'});
-          else if(qty<=LOW_STOCK_THRESHOLD)lowStockItems.push({name:item.item_name,variant:v.variant_name,qty,status:'low'});
-        }
+    for(const item of loyItems)for(const v of(item.variants||[])){
+      const qty=inventoryMap[v.id];
+      if(qty!==undefined&&qty!==null){
+        if(qty<=0)lowStockItems.push({name:item.item_name,variant:v.variant_name,qty,status:'out'});
+        else if(qty<=LOW_STOCK_THRESHOLD)lowStockItems.push({name:item.item_name,variant:v.variant_name,qty,status:'low'});
       }
     }
     updateStockBell();
-  }catch(e){console.log('Inventory error:',e.message);}
+  }catch(e){console.log('Inventory:',e.message);}
 }
-
 function updateStockBell(){
-  const bell=document.getElementById('stock-bell');
-  const badge=document.getElementById('bell-badge');
-  if(lowStockItems.length>0){bell.style.display='';badge.style.display='flex';badge.textContent=lowStockItems.length>9?'9+':lowStockItems.length;}
+  const bell=document.getElementById('stock-bell'),badge=document.getElementById('bell-badge');
+  if(lowStockItems.length){bell.style.display='';badge.style.display='flex';badge.textContent=lowStockItems.length>9?'9+':lowStockItems.length;}
   else bell.style.display='none';
 }
-
-function getStockTag(variantId){
-  const qty=inventoryMap[variantId];
-  if(qty===undefined||qty===null)return'';
-  if(qty<=0)return'<span class="stock-tag out">Out of stock</span>';
-  if(qty<=LOW_STOCK_THRESHOLD)return`<span class="stock-tag">Only ${qty} left</span>`;
-  return'';
-}
-
+function getStockTag(vid){const q=inventoryMap[vid];if(q===undefined||q===null)return'';if(q<=0)return'<span class="stock-tag out">Out of stock</span>';if(q<=LOW_STOCK_THRESHOLD)return`<span class="stock-tag">Only ${q} left</span>`;return'';}
 function openStockModal(){
-  const list=document.getElementById('stock-modal-list');
-  const sub=document.getElementById('stock-modal-sub');
-  if(!lowStockItems.length){sub.textContent='All products are well-stocked.';list.innerHTML='';}
-  else{
-    sub.textContent=lowStockItems.length+' item'+(lowStockItems.length>1?'s':'')+' need attention:';
-    list.innerHTML=lowStockItems.map(i=>`<div class="stock-item"><span>${esc(i.name)}${i.variant&&i.variant!=='Regular'?' – '+esc(i.variant):''}</span><span class="stock-qty ${i.status}">${i.status==='out'?'Out of stock':i.qty+' left'}</span></div>`).join('');
-  }
+  const sub=document.getElementById('stock-modal-sub'),list=document.getElementById('stock-modal-list');
+  if(!lowStockItems.length){sub.textContent='All products well-stocked.';list.innerHTML='';}
+  else{sub.textContent=lowStockItems.length+' item'+(lowStockItems.length>1?'s':'')+' need attention:';
+    list.innerHTML=lowStockItems.map(i=>`<div class="stock-item"><span>${esc(i.name)}${i.variant&&i.variant!=='Regular'?' – '+esc(i.variant):''}</span><span class="stock-qty ${i.status}">${i.status==='out'?'Out of stock':i.qty+' left'}</span></div>`).join('');}
   document.getElementById('stock-modal').classList.add('show');
 }
 function closeStockModal(){document.getElementById('stock-modal').classList.remove('show');}
 
-// ─── Manual Search ─────────────────────────────────────────────────────────
+// ── Search ────────────────────────────────────────────────────────────────────
 function onSearch(q){renderSearch(q);}
-
 function renderSearch(q){
   const container=document.getElementById('search-results');
-  if(!loyItems.length){container.innerHTML='<div class="search-empty">Connect to Loyverse to search products</div>';return;}
+  if(!loyItems.length){container.innerHTML='<div class="search-empty">Connect to Loyverse to search</div>';return;}
   const query=q.toLowerCase().trim();
-  const results=query
-    ?loyItems.filter(i=>i.item_name.toLowerCase().includes(query)).slice(0,20)
-    :loyItems.slice(0,20);
-  if(!results.length){container.innerHTML='<div class="search-empty">No products found</div>';return;}
+  const results=query?loyItems.filter(i=>i.item_name.toLowerCase().includes(query)).slice(0,30):loyItems.slice(0,30);
+  if(!results.length){container.innerHTML='<div class="search-empty">No products found for "'+esc(q)+'"</div>';return;}
   container.innerHTML=results.map(item=>{
     const variant=(item.variants&&item.variants[0])||{};
     const price=variant.default_price||0;
-    const img=itemImageCache[item.id]
-      ?`<img class="si-thumb" src="data:image/jpeg;base64,${itemImageCache[item.id]}" alt=""/>`
-      :`<div class="si-thumb-ph">🛍️</div>`;
-    const stockTag=getStockTag(variant.id);
-    return`<div class="search-item" onclick="addItemById('${escA(item.id)}')">
-      ${img}
-      <div class="si-body">
-        <div class="si-name">${esc(item.item_name)}${stockTag}</div>
-        <div class="si-price">₱${price.toFixed(2)}</div>
-      </div>
-      <button class="si-add" onclick="event.stopPropagation();addItemById('${escA(item.id)}')">+ Add</button>
+    const thumb=imgCache[item.id]?`<img class="si-thumb" src="data:image/jpeg;base64,${imgCache[item.id]}" alt=""/>`:`<div class="si-thumb-ph">🛍️</div>`;
+    return`<div class="search-item">
+      ${thumb}
+      <div class="si-body"><div class="si-name">${esc(item.item_name)}${getStockTag(variant.id)}</div><div class="si-price">₱${price.toFixed(2)}</div></div>
+      <button class="si-add" onclick="addItemById('${escA(item.id)}')">+ Add</button>
     </div>`;
   }).join('');
 }
-
 function addItemById(itemId){
-  const item=loyItems.find(i=>i.id===itemId);
-  if(!item)return;
-  const variant=(item.variants&&item.variants[0])||{};
-  addToCart(item,variant);
-  // Flash feedback
-  document.getElementById('search-input').value='';
-  renderSearch('');
+  const item=loyItems.find(i=>i.id===itemId);if(!item)return;
+  addToCart(item,(item.variants&&item.variants[0])||{});
+  document.getElementById('search-input').value='';renderSearch('');
 }
 
-// ─── Camera ────────────────────────────────────────────────────────────────
+// ── Camera ────────────────────────────────────────────────────────────────────
 async function startCamera(){
   if(!apiToken){showStatus('Connect to Loyverse first.');return;}
-  if(Object.keys(visualIndex).length===0){
-    showStatus('⚠️ Build the visual index first (see progress bar above) for accurate scanning. You can still use manual search below.');
-  }
   try{
     const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
     document.getElementById('camvid').srcObject=stream;cameraOn=true;
@@ -607,7 +585,6 @@ async function startCamera(){
     startScanLoop();
   }catch(e){showStatus('Camera error: '+e.message);}
 }
-
 function stopCamera(){
   const vid=document.getElementById('camvid');
   if(vid.srcObject)vid.srcObject.getTracks().forEach(t=>t.stop());
@@ -620,111 +597,67 @@ function stopCamera(){
   document.getElementById('scan-count').style.display='none';
   setStepBadge(null);
 }
-
-function updateInterval(v){
-  scanInterval=parseInt(v);document.getElementById('interval-val').textContent=v+'s';
-  if(cameraOn){clearInterval(scanTimer);clearInterval(countdownTimer);startScanLoop();}
-}
-
+function updateInterval(v){scanInterval=parseInt(v);document.getElementById('interval-val').textContent=v+'s';if(cameraOn){clearInterval(scanTimer);clearInterval(countdownTimer);startScanLoop();}}
 function startScanLoop(){
   countdownVal=scanInterval;
-  countdownTimer=setInterval(()=>{
-    countdownVal-=0.1;if(countdownVal<0)countdownVal=scanInterval;
-    document.getElementById('countdown-bar').style.width=Math.max(0,(countdownVal/scanInterval)*100)+'%';
-  },100);
-  scanTimer=setInterval(runScan,scanInterval*1000);
-  runScan();
+  countdownTimer=setInterval(()=>{countdownVal-=0.1;if(countdownVal<0)countdownVal=scanInterval;document.getElementById('countdown-bar').style.width=Math.max(0,(countdownVal/scanInterval)*100)+'%';},100);
+  scanTimer=setInterval(runScan,scanInterval*1000);runScan();
 }
 
-// ─── Smart Visual Scan ─────────────────────────────────────────────────────
+// ── Smart scan ────────────────────────────────────────────────────────────────
 async function runScan(){
   if(scanning||!cameraOn||!apiToken)return;
-  scanning=true;
-
   const indexEntries=Object.values(visualIndex);
-  if(indexEntries.length===0){
-    showStatus('⚠️ Visual index not built yet. Use manual search below or build the index first.');
-    scanning=false;return;
-  }
-
+  if(indexEntries.length===0){showStatus('⚠️ Visual index not built yet. Use manual search below.');return;}
+  scanning=true;
   try{
     const b64=captureFrame();if(!b64){scanning=false;return;}
 
-    // ── Step 1: Describe camera frame visually ─────────────────────────────
-    setStepBadge('Describing frame…');
-    showStatus('<span class="spinner"></span>Looking at what\'s in frame…');
-
-    const describePrompt=`Look at this image. Describe what product(s) you can see. For each item mention: type (sticker/shirt/pin/keychain/etc), colors, any characters or subjects visible, design style, and any text or markings. Be specific. Max 80 words per item.`;
-    const frameDescription=await claudeFetch([{role:'user',content:[
+    // Step 1: describe camera frame
+    setStepBadge('Step 1 — Reading frame…');
+    showStatus('<span class="spinner"></span>Reading what\'s in frame…');
+    const frameDesc=await claudeFetch([{role:'user',content:[
       {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
-      {type:'text',text:describePrompt}
+      {type:'text',text:'Describe the product(s) visible in this image. For each: item type, colors, character or subject, design style, any text. Be specific. Max 80 words.'}
     ]}],200);
 
-    if(!frameDescription||frameDescription.length<10){
-      showStatus('Could not read frame. Make sure item is well-lit and centered.');
+    if(!frameDesc||frameDesc.length<10){
+      showStatus('Could not read frame — try better lighting and center the item.');
       setStepBadge(null);scanning=false;return;
     }
 
-    // ── Step 2: Match description against visual index ─────────────────────
-    setStepBadge('Matching catalog…');
-    showStatus('<span class="spinner"></span>Matching against '+indexEntries.length+' indexed products…');
+    // Step 2: match against index descriptions
+    setStepBadge('Step 2 — Matching catalog…');
+    showStatus('<span class="spinner"></span>Matching against '+indexEntries.length+' products…');
 
-    // Build catalog text from visual index descriptions
-    const catalogText=indexEntries.map((e,i)=>`[${i}] "${e.name}": ${e.description}`).join('\n');
+    const catalog=indexEntries.map((e,i)=>`[${i}] ${e.name}: ${e.description}`).join('\n');
+    const matchTxt=await claudeFetch([{role:'user',content:`Scanned item: ${frameDesc}\n\nCatalog:\n${catalog}\n\nWhich catalog items best match the scanned item visually? Reply ONLY JSON:\n{"matches":[{"index":0,"confidence":"high|medium|low"}]}\nMax 3. If nothing matches: {"matches":[]}`}],200);
 
-    const matchPrompt=`You are matching a scanned item against a product catalog.
-
-SCANNED ITEM DESCRIPTION:
-${frameDescription}
-
-PRODUCT CATALOG (index: name: visual description):
-${catalogText}
-
-Find up to 3 products from the catalog that best visually match the scanned item description.
-
-Respond ONLY with JSON:
-{"matches":[{"index":0,"confidence":"high|medium|low"},{"index":5,"confidence":"medium"}]}
-
-Rules:
-- Use catalog index numbers (the [0], [1], etc.)
-- Only include genuine visual matches
-- If nothing matches well: {"matches":[]}
-- Max 3 matches, best first
-No extra text.`;
-
-    const matchTxt=await claudeFetch([{role:'user',content:matchPrompt}],300);
-    let matchResult;
-    try{matchResult=JSON.parse(matchTxt.replace(/```json|```/g,'').trim());}catch{matchResult={matches:[]};}
-
+    let result;try{result=JSON.parse(matchTxt.replace(/```json|```/g,'').trim());}catch{result={matches:[]};}
     setStepBadge(null);
-    const matches=(matchResult.matches||[]).slice(0,3);
+    const matches=(result.matches||[]).slice(0,3);
 
     if(!matches.length){
-      showStatus('No match found. Tip: Make sure visual index is built and products have clear photos in Loyverse.');
+      showStatus('No match found. Try manual search below, or re-index if you added new products.');
       document.getElementById('scan-count').style.display='none';
       scanning=false;return;
     }
 
-    // ── Step 3: Resolve matches to actual items ────────────────────────────
     const matched=matches.map(m=>{
-      const entry=indexEntries[m.index];
-      if(!entry)return null;
-      const item=loyItems.find(i=>i.id===entry.itemId);
-      if(!item)return null;
+      const entry=indexEntries[m.index];if(!entry)return null;
+      const item=loyItems.find(i=>i.id===entry.itemId);if(!item)return null;
       const variant=(item.variants||[]).find(v=>v.id===entry.variantId)||(item.variants&&item.variants[0])||{};
-      const imgB64=itemImageCache[item.id]||null;
-      return{item,variant,confidence:m.confidence,imgB64};
+      return{item,variant,confidence:m.confidence,imgB64:imgCache[item.id]||null};
     }).filter(Boolean);
 
-    if(matched.length>0){
+    if(matched.length){
       pendingDetections=matched;renderDetections(matched);
       const sc=document.getElementById('scan-count');sc.style.display='';
       sc.textContent=matched.length+' match'+(matched.length>1?'es':'')+' found';
     }else{
-      showStatus('No confident match found. Try the manual search below.');
+      showStatus('No confident match. Try manual search below.');
       document.getElementById('scan-count').style.display='none';
     }
-
   }catch(e){setStepBadge(null);showStatus('Scan error: '+e.message);}
   scanning=false;
 }
@@ -737,60 +670,34 @@ function captureFrame(){
   return canvas.toDataURL('image/jpeg',0.85).split(',')[1];
 }
 
-// ─── Detection Cards ───────────────────────────────────────────────────────
+// ── Detection cards ───────────────────────────────────────────────────────────
 function renderDetections(matched){
   let html='';
   matched.forEach((m,i)=>{
     const price=m.variant.default_price||0;
-    const confClass=m.confidence==='high'?'conf-high':m.confidence==='medium'?'conf-medium':'conf-low';
-    const stockTag=getStockTag(m.variant.id);
-    const thumb=m.imgB64
-      ?`<img class="det-thumb" src="data:image/jpeg;base64,${m.imgB64}" alt=""/>`
-      :`<div class="det-thumb-ph">🛍️</div>`;
-    html+=`<div class="det-card" id="det-${i}">
-      ${thumb}
-      <div class="det-body">
-        <div class="det-name">${esc(m.item.item_name)}${stockTag}<span class="conf-badge ${confClass}">${m.confidence}</span></div>
-        <div class="det-sub">₱${price.toFixed(2)}</div>
-      </div>
-      <div class="det-actions">
-        <button class="add-btn" onclick="addDetection(${i})">+ Add</button>
-        <button class="dismiss-btn" onclick="dismissDetection(${i})">✕</button>
-      </div>
-    </div>`;
+    const cc=m.confidence==='high'?'conf-high':m.confidence==='medium'?'conf-medium':'conf-low';
+    const thumb=m.imgB64?`<img class="det-thumb" src="data:image/jpeg;base64,${m.imgB64}" alt=""/>`:`<div class="det-thumb-ph">🛍️</div>`;
+    html+=`<div class="det-card" id="det-${i}">${thumb}<div class="det-body"><div class="det-name">${esc(m.item.item_name)}${getStockTag(m.variant.id)}<span class="conf-badge ${cc}">${m.confidence}</span></div><div class="det-sub">₱${price.toFixed(2)}</div></div><div class="det-actions"><button class="add-btn" onclick="addDetection(${i})">+ Add</button><button class="dismiss-btn" onclick="dismissDetection(${i})">✕</button></div></div>`;
   });
   if(matched.length>1)html+=`<div class="add-all-row"><button class="add-all-btn" onclick="addAllDetections()">+ Add all ${matched.length}</button></div>`;
   document.getElementById('detections').innerHTML=html;
 }
-
 function addDetection(i){if(!pendingDetections[i])return;addToCart(pendingDetections[i].item,pendingDetections[i].variant);dismissDetection(i);}
 function dismissDetection(i){
-  pendingDetections[i]=null;
-  const el=document.getElementById('det-'+i);if(el)el.remove();
+  pendingDetections[i]=null;const el=document.getElementById('det-'+i);if(el)el.remove();
   const rem=pendingDetections.filter(Boolean).length;
   const aa=document.querySelector('.add-all-row');if(aa&&rem<2)aa.remove();
   if(rem===0)document.getElementById('scan-count').style.display='none';
 }
-function addAllDetections(){
-  pendingDetections.forEach(m=>{if(m)addToCart(m.item,m.variant);});
-  pendingDetections=[];
-  document.getElementById('detections').innerHTML='<div class="status-text">All items added ✓</div>';
-  document.getElementById('scan-count').style.display='none';
-}
+function addAllDetections(){pendingDetections.forEach(m=>{if(m)addToCart(m.item,m.variant);});pendingDetections=[];document.getElementById('detections').innerHTML='<div class="status-text">All items added ✓</div>';document.getElementById('scan-count').style.display='none';}
 
-// ─── Cart ──────────────────────────────────────────────────────────────────
+// ── Cart ──────────────────────────────────────────────────────────────────────
 function addToCart(item,variant){
   const key=variant.id||item.id,ex=cart.find(c=>c.vid===key);
-  if(ex){ex.qty++;}else{
-    const vn=variant.variant_name&&variant.variant_name!=='Regular'?' – '+variant.variant_name:'';
-    cart.push({vid:key,iid:item.id,name:item.item_name+vn,price:variant.default_price||0,qty:1});
-  }
+  if(ex){ex.qty++;}else{const vn=variant.variant_name&&variant.variant_name!=='Regular'?' – '+variant.variant_name:'';cart.push({vid:key,iid:item.id,name:item.item_name+vn,price:variant.default_price||0,qty:1});}
   renderCart();
 }
-function changeQty(vid,d){
-  const i=cart.findIndex(c=>c.vid===vid);if(i<0)return;
-  cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);renderCart();
-}
+function changeQty(vid,d){const i=cart.findIndex(c=>c.vid===vid);if(i<0)return;cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);renderCart();}
 function renderCart(){
   const list=document.getElementById('cart-list'),tot=document.getElementById('totals'),btn=document.getElementById('checkout-btn');
   if(!cart.length){list.innerHTML='<div class="cart-empty">No items added yet</div>';tot.style.display='none';btn.disabled=true;return;}
@@ -798,23 +705,16 @@ function renderCart(){
   for(const c of cart){const line=c.price*c.qty;sub+=line;
     html+=`<div class="cart-item"><div class="ci-name">${esc(c.name)}</div><div class="qty-ctrl"><button class="qbtn" onclick="changeQty('${escA(c.vid)}',-1)">−</button><span class="qnum">${c.qty}</span><button class="qbtn" onclick="changeQty('${escA(c.vid)}',1)">+</button></div><div class="ci-price">₱${line.toFixed(2)}</div></div>`;
   }
-  list.innerHTML=html;
-  document.getElementById('subtotal').textContent='₱'+sub.toFixed(2);
-  document.getElementById('total-amt').textContent='₱'+sub.toFixed(2);
-  tot.style.display='';btn.disabled=!apiToken;
+  list.innerHTML=html;document.getElementById('subtotal').textContent='₱'+sub.toFixed(2);document.getElementById('total-amt').textContent='₱'+sub.toFixed(2);tot.style.display='';btn.disabled=!apiToken;
 }
 function clearCart(){cart=[];renderCart();}
 
-// ─── Sale & Receipt ────────────────────────────────────────────────────────
+// ── Sale & Receipt ────────────────────────────────────────────────────────────
 function openSaleModal(){
-  let html='',total=0;
-  for(const c of cart){const l=c.price*c.qty;total+=l;html+=`<div class="r-item"><span>${c.qty}x ${esc(c.name)}</span><span>₱${l.toFixed(2)}</span></div>`;}
-  document.getElementById('sale-items').innerHTML=html;
-  document.getElementById('sale-total').textContent='₱'+total.toFixed(2);
-  document.getElementById('sale-modal').classList.add('show');
+  let html='',total=0;for(const c of cart){const l=c.price*c.qty;total+=l;html+=`<div class="r-item"><span>${c.qty}x ${esc(c.name)}</span><span>₱${l.toFixed(2)}</span></div>`;}
+  document.getElementById('sale-items').innerHTML=html;document.getElementById('sale-total').textContent='₱'+total.toFixed(2);document.getElementById('sale-modal').classList.add('show');
 }
 function closeSaleModal(){document.getElementById('sale-modal').classList.remove('show');}
-
 async function submitSale(){
   if(!apiToken||!storeId)return;
   closeSaleModal();showStatus('<span class="spinner"></span>Submitting to Loyverse…');
@@ -823,47 +723,31 @@ async function submitSale(){
   try{
     const r=await loyFetch('receipts',{method:'POST',body:JSON.stringify({store_id:storeId,receipt_type:'SALE',line_items:lineItems,payments:[{payment_type_id:null,money_amount:parseFloat(total.toFixed(2))}],total_money:parseFloat(total.toFixed(2)),total_tax:0,points_earned:0,points_balance:0,points_deducted:0,note:''})});
     const d=await r.json();
-    if(r.ok&&d.receipt_number){
-      lastReceiptData={receiptNumber:d.receipt_number,items:[...cart],total,storeName,date:new Date()};
-      clearCart();await loadInventory();openReceiptModal(lastReceiptData);
-    }else{
-      const msg=d.errors?d.errors.map(e=>e.details||e.code).join(', '):JSON.stringify(d);
-      showStatus('Loyverse error: '+msg);
-    }
+    if(r.ok&&d.receipt_number){lastReceiptData={receiptNumber:d.receipt_number,items:[...cart],total,storeName,date:new Date()};clearCart();await loadInventory();openReceiptModal(lastReceiptData);}
+    else{const msg=d.errors?d.errors.map(e=>e.details||e.code).join(', '):JSON.stringify(d);showStatus('Loyverse error: '+msg);}
   }catch(e){showStatus('Network error: '+e.message);}
 }
-
 function openReceiptModal(data){
   const dateStr=data.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  document.getElementById('receipt-store').textContent=data.storeName;
-  document.getElementById('receipt-num').textContent='Receipt #'+data.receiptNumber+' · '+dateStr;
+  document.getElementById('receipt-store').textContent=data.storeName;document.getElementById('receipt-num').textContent='Receipt #'+data.receiptNumber+' · '+dateStr;
   let html='';for(const c of data.items){const l=c.price*c.qty;html+=`<div class="r-item"><span>${c.qty}x ${esc(c.name)}</span><span>₱${l.toFixed(2)}</span></div>`;}
-  document.getElementById('receipt-items').innerHTML=html;
-  document.getElementById('receipt-total').textContent='₱'+data.total.toFixed(2);
-  document.getElementById('receipt-modal').classList.add('show');
+  document.getElementById('receipt-items').innerHTML=html;document.getElementById('receipt-total').textContent='₱'+data.total.toFixed(2);document.getElementById('receipt-modal').classList.add('show');
 }
 function closeReceiptModal(){document.getElementById('receipt-modal').classList.remove('show');}
-
 function buildReceiptText(data){
   const dateStr=data.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
   let txt=`${data.storeName}\nReceipt #${data.receiptNumber}\n${dateStr}\n${'─'.repeat(28)}\n`;
   for(const c of data.items)txt+=`${c.qty}x ${c.name}\n    ₱${(c.price*c.qty).toFixed(2)}\n`;
-  return txt+`${'─'.repeat(28)}\nTOTAL: ₱${data.total.toFixed(2)}\nThank you for your purchase!`;
+  return txt+`${'─'.repeat(28)}\nTOTAL: ₱${data.total.toFixed(2)}\nThank you!`;
 }
 function shareWhatsApp(){if(!lastReceiptData)return;window.open('https://wa.me/?text='+encodeURIComponent(buildReceiptText(lastReceiptData)),'_blank');}
-function copyReceipt(){
-  if(!lastReceiptData)return;
-  navigator.clipboard.writeText(buildReceiptText(lastReceiptData)).then(()=>{
-    const btn=document.querySelector('.share-btn.copy');const orig=btn.innerHTML;btn.innerHTML='✅ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);
-  });
-}
+function copyReceipt(){if(!lastReceiptData)return;navigator.clipboard.writeText(buildReceiptText(lastReceiptData)).then(()=>{const b=document.querySelector('.share-btn.copy');const o=b.innerHTML;b.innerHTML='✅ Copied!';setTimeout(()=>b.innerHTML=o,2000);});}
 function printReceipt(){
-  if(!lastReceiptData)return;
-  const data=lastReceiptData;
+  if(!lastReceiptData)return;const data=lastReceiptData;
   const dateStr=data.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
   let html=`<div style="text-align:center;margin-bottom:12px"><strong>${esc(data.storeName)}</strong><br/>Receipt #${data.receiptNumber}<br/>${dateStr}</div><hr/>`;
   for(const c of data.items)html+=`<div style="display:flex;justify-content:space-between"><span>${c.qty}x ${esc(c.name)}</span><span>₱${(c.price*c.qty).toFixed(2)}</span></div>`;
-  html+=`<hr/><div style="display:flex;justify-content:space-between;font-weight:bold"><span>TOTAL</span><span>₱${data.total.toFixed(2)}</span></div><p style="text-align:center;margin-top:12px">Thank you for your purchase!</p>`;
+  html+=`<hr/><div style="display:flex;justify-content:space-between;font-weight:bold"><span>TOTAL</span><span>₱${data.total.toFixed(2)}</span></div><p style="text-align:center;margin-top:12px">Thank you!</p>`;
   document.getElementById('print-receipt').innerHTML=html;window.print();
 }
 </script>
